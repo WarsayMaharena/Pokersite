@@ -183,40 +183,7 @@ class User():
                 print("new code: ", code,"\n\n")
         
         return code
-            
-
-    def old_generate_unique_code(self):
-        database = r"poker_database.db"
-        conn = create_connection(database)
-        c = conn.cursor()
-        sql3 = "SELECT roomid FROM Rooms"
-        c.execute(sql3)
-        myresult=c.fetchall()
-        i=0
-        code = "" #genererar en kod för rummet
-        for _ in range(6): 
-            code += random.choice(ascii_uppercase)
-
-        while True:
-
-            if len(myresult) == i:        #if len(myresult) == i:   #kollar om hela listan har checkats där i är listans index, om i är lika med
-                                                                    # längden av listan så har allt checkats och så fall är koden inte i listan och är giltig
-                sql_insert_query = """INSERT INTO Rooms VALUES ('%s', %s);"""%(code,0)
-                c.execute(sql_insert_query)
-                conn.commit()
-                c.close
-                break
-
-            elif code in myresult[i][0]: #om koden redan existerar generas en ny kod för rummet
-                code=""
-                for _ in range(6):
-                    code += random.choice(ascii_uppercase)
-                i=0 #listnumret startas om för att kolla om hela listan igen
-
-            i=i+1
-        
-        return code
-
+    
     ############## Hjälp funktioner för SQL kommando ##########################################
 
 
@@ -245,5 +212,5 @@ user=User()
                 
 
 #function()
-print(user.generate_unique_code())
-print(user.show_rooms())
+#print(user.generate_unique_code())
+#print(user.show_rooms())
