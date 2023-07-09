@@ -1,0 +1,2 @@
+lsof -i:5000 //finds all used ports 
+kill -9 <PID> //kill a specified currently used port

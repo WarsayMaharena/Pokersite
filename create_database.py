@@ -136,13 +136,32 @@ class User():
             return customerid
         
     def room_exists(self, room): #checks if the user is trying to join actually exists
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
         sql3="""SELECT roomid FROM Rooms WHERE roomid='%s';"""%(room)
-        self.c.execute(sql3)
-        myresult=self.c.fetchall()
+        c.execute(sql3)
+        myresult=c.fetchall()
         if len(myresult) == 0:
+            c.close()
             return False
         else:
             return True
+        
+    def add_member(self, room): #adds a member to the room
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
+        sql3="""SELECT members FROM Rooms WHERE roomid='%s';"""%(room)
+        c.execute(sql3)
+        myresult=c.fetchall()
+        if(len(myresult)!=0):
+            AddedMember=myresult[0][0]+1
+        print(AddedMember," ", room)
+        sql3_1="""UPDATE Rooms SET members = %s WHERE roomid = '%s';"""%(AddedMember,room)
+        c.execute(sql3_1)
+        conn.commit()
+        
         
     def del_room(self, room): #deletes the room once all members have left
         sql3 = """DELETE FROM Rooms WHERE roomid='%s';"""%(room)
@@ -210,7 +229,7 @@ user=User()
 #show_tabels()
 #print(type(show_users_table()))
                 
-
+#user.add_member('MNMCIM')
 #function()
 #print(user.generate_unique_code())
 #print(user.show_rooms())

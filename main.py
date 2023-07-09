@@ -33,6 +33,7 @@ def home():
         room = code
         if create != False:
             room = user.generate_unique_code()
+            print(room, "room numbe is here")
 
         elif code not in rooms:
             return render_template("home.html", error="Room does not exist.", code=code, name=name, betting=betting)
@@ -47,13 +48,28 @@ def home():
 @app.route("/room")
 def room():
     
-    room=session.get["room"]
-    name=session.get["name"]
+    room=session.get("room")
+    name=session.get("name")
     NonExistent=user.room_exists(room)
     if room is None or name is None or NonExistent==False:
         return redirect(url_for("home"))
     
     return render_template("room.html",room=room,name=name) #also add in messages.
+
+@socketio.on("connect")
+def connect():
+    room=session.get("room")
+    name=session.get("name")
+    if not room or not name:
+        return
+    if user.room_exists==False:
+        leave_room(room)
+        return
+    
+    join_room(room)
+    send({"name": name, "message":"has joined the room"}, to=room)
+    user.add_member(room)
+    print(f"{name} has joined room {room}")
 
 
 if __name__ == "__main__":
