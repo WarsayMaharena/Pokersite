@@ -28,7 +28,7 @@ def create_tables():
                             funds Integer
                             );"""
     
-    sql_room_table = """CREATE TABLE Rooms (
+    sql_room_table = """CREATE TABLE IF NOT EXISTS Rooms (
                             roomid text PRIMARY KEY,
                             members integer
                             );"""
@@ -249,12 +249,12 @@ class User():
  
 
 create_connection(r"poker_database.db")
-#create_tables()
+create_tables()
 #user=User()
 #user.insert_comment("hello", "there", "kenobi")
 #test_insert()
 user=User()
-user.member_exists("XRYDNQ")
+#user.member_exists("XRYDNQ")
 #user.room_exists('AJYZ')
 #user.show_rooms()
 #show_tabels()
@@ -262,4 +262,4 @@ user.member_exists("XRYDNQ")
 #user.add_member('MNMCIM')
 #function()
 #print(user.generate_unique_code())
-print(user.show_rooms())
+#print(user.show_rooms())

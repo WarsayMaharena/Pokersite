@@ -15,6 +15,21 @@
 <script type="text/javascript">
   var socketio = io();
 
+  const createMessage = (name, msg) => {
+    const content = `
+    <div class="text">
+        <span>
+            <strong>${name}</strong>: ${msg}
+        </span>
+    </div>
+    `;
+    messages.innerHTML += content;
+  };
+
+  socketio.on("message", (data) => {
+    createMessage(data.name, data.message)
+  })
+
   const sendMessage = () => {
     console.log("send");
   }
