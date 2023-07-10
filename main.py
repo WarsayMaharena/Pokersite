@@ -8,8 +8,6 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "hjhjsdahhds"
 socketio = SocketIO(app)
 
-rooms = {}
-
 @app.route("/", methods=["POST", "GET"])
 def home():
 
@@ -35,7 +33,7 @@ def home():
             room = user.generate_unique_code()
             print(room, "room numbe is here")
 
-        elif code not in rooms:
+        elif user.room_exists(code)==False:
             return render_template("home.html", error="Room does not exist.", code=code, name=name, betting=betting)
         
         session["room"] = room
@@ -57,7 +55,7 @@ def room():
     return render_template("room.html",room=room,name=name) #also add in messages.
 
 @socketio.on("connect")
-def connect():
+def connect(auth):
     room=session.get("room")
     name=session.get("name")
     if not room or not name:
@@ -70,6 +68,20 @@ def connect():
     send({"name": name, "message":"has joined the room"}, to=room)
     user.add_member(room)
     print(f"{name} has joined room {room}")
+
+@socketio.on("disconnect")
+def disconnect():
+    room=session.get("room")
+    name=session.get("name")
+    leave_room(room)
+
+    if user.room_exists(room)==True:
+        user.sub_member(room)
+        if user.member_exists(room)==False:
+            user.del_room(room)
+
+    send({"name": name, "message":"has left the room"}, to=room)
+    print(f"{name} has left the room {room}")
 
 
 if __name__ == "__main__":

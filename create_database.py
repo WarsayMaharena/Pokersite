@@ -10,7 +10,7 @@ def create_connection(db_file):
     conn = None
     try:
         conn = sqlite3.connect(db_file)
-        print("Created connection")
+        #print("Created connection")
     except Error as e:
         print(e)
 
@@ -148,6 +148,21 @@ class User():
         else:
             return True
         
+    def member_exists(self,room):
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
+        sql3="""SELECT members FROM Rooms WHERE roomid='%s';"""%(room)
+        c.execute(sql3)
+        myresult=c.fetchall()
+        if myresult[0][0] == 0:
+            c.close()
+            print("false")
+            return False
+        else:
+            return True
+               
+        
     def add_member(self, room): #adds a member to the room
         database = r"poker_database.db"
         conn = create_connection(database)
@@ -161,13 +176,29 @@ class User():
         sql3_1="""UPDATE Rooms SET members = %s WHERE roomid = '%s';"""%(AddedMember,room)
         c.execute(sql3_1)
         conn.commit()
-        
-        
+
+    def sub_member(self, room):
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
+        sql3="""SELECT members FROM Rooms WHERE roomid='%s';"""%(room)
+        c.execute(sql3)
+        myresult=c.fetchall()
+        if(len(myresult)!=0):
+            SubbedMember=myresult[0][0]-1
+        print(SubbedMember," ", room)
+        sql3_1="""UPDATE Rooms SET members = %s WHERE roomid = '%s';"""%(SubbedMember,room)
+        c.execute(sql3_1)
+        conn.commit()
+   
     def del_room(self, room): #deletes the room once all members have left
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
         sql3 = """DELETE FROM Rooms WHERE roomid='%s';"""%(room)
-        self.c.execute(sql3)
-        self.conn.commit()
-        self.c.close
+        c.execute(sql3)
+        conn.commit()
+        c.close
 
     def show_rooms(self):
         sql3 = "SELECT * FROM Rooms"
@@ -223,13 +254,12 @@ create_connection(r"poker_database.db")
 #user.insert_comment("hello", "there", "kenobi")
 #test_insert()
 user=User()
-
+user.member_exists("XRYDNQ")
 #user.room_exists('AJYZ')
 #user.show_rooms()
 #show_tabels()
 #print(type(show_users_table()))
-                
 #user.add_member('MNMCIM')
 #function()
 #print(user.generate_unique_code())
-#print(user.show_rooms())
+print(user.show_rooms())
