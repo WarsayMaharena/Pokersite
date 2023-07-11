@@ -127,11 +127,15 @@ class User():
         c.execute(sql_insert_query)
         conn.commit()
         
+        
 
     def calc_new_commentid(self):
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
         sql3 = "SELECT MAX(commentid) FROM Comments"
-        self.c.execute(sql3)
-        myresult = self.c.fetchall()[0][0]
+        c.execute(sql3)
+        myresult = c.fetchall()[0][0]
         print("MAX: ",myresult)
         if myresult == None:
             return 1

@@ -54,11 +54,13 @@ def room():
     
     return render_template("room.html",code=room,name=name) #also add in messages.
 
-socketio.on("message")
+@socketio.on("message")
 def message(data):
     room=session.get("room")
     name=session.get("name")
     message=name+": "+data["data"]
+    print("HELLLLLLLOOOOOOOOO")
+    print(message)
     if user.room_exists(room) ==False:
         return
     
