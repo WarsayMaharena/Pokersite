@@ -4,9 +4,23 @@ import random
 from string import ascii_uppercase
 from create_database import User
 user=User()
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "hjhjsdahhds"
 socketio = SocketIO(app)
+
+rooms = {}
+
+def generate_unique_code(length):
+    while True:
+        code = ""
+        for _ in range(length):
+            code += random.choice(ascii_uppercase)
+        
+        if code not in rooms:
+            break
+    
+    return code
 
 @app.route("/", methods=["POST", "GET"])
 def home():
@@ -52,7 +66,26 @@ def room():
     if room is None or name is None or NonExistent==False:
         return redirect(url_for("home"))
     
-    return render_template("room.html",room=room,name=name) #also add in messages.
+    return render_template("room.html",code=room,name=name)
+
+@socketio.on("message")
+def message(data):
+    room = session.get("room")
+    name = session.get("name")
+    message=name+": "+data["data"]
+    print(message)
+    if user.room_exists(room)==False:
+        return 
+    
+    content = {
+        "name": session.get("name"),
+        "message": data["data"]
+    }
+
+    print(content)
+    user.insert_comment(name, room, message)
+    send(content, to=room)
+    print(f"{session.get('name')} said: {data['data']}")
 
 @socketio.on("connect")
 def connect(auth):
@@ -82,7 +115,6 @@ def disconnect():
 
     send({"name": name, "message":"has left the room"}, to=room)
     print(f"{name} has left the room {room}")
-
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)

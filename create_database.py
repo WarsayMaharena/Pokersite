@@ -28,7 +28,7 @@ def create_tables():
                             funds Integer
                             );"""
     
-    sql_room_table = """CREATE TABLE Rooms (
+    sql_room_table = """CREATE TABLE IF NOT EXISTS Rooms (
                             roomid text PRIMARY KEY,
                             members integer
                             );"""
@@ -66,7 +66,7 @@ def show_users_table():
 
     conn = create_connection(database)
     c = conn.cursor()
-    sql_select_query = """SELECT * FROM Users
+    sql_select_query = """SELECT * FROM Comments
     ;
     """
     c.execute(sql_select_query)
@@ -119,15 +119,22 @@ class User():
         self.c = self.conn.cursor()
 
     def insert_comment(self, name, roomid, message):
-        self.c
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
         commentid_val=self.calc_new_commentid()
-        sql_insert_query = """INSERT INTO Comments VALUES (%s, %s, %s, %s);"""%(commentid_val,roomid,name,message)
-        self.c.execute(sql_insert_query)
+        sql_insert_query = """INSERT INTO Comments VALUES (%s, '%s', '%s', '%s');"""%(commentid_val,roomid,name,message)
+        c.execute(sql_insert_query)
+        conn.commit()
+        
 
     def calc_new_commentid(self):
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
         sql3 = "SELECT MAX(commentid) FROM Comments"
-        self.c.execute(sql3)
-        myresult = self.c.fetchall()[0][0]
+        c.execute(sql3)
+        myresult = c.fetchall()[0][0]
         print("MAX: ",myresult)
         if myresult == None:
             return 1
@@ -170,9 +177,9 @@ class User():
         sql3="""SELECT members FROM Rooms WHERE roomid='%s';"""%(room)
         c.execute(sql3)
         myresult=c.fetchall()
+        AddedMember=0
         if(len(myresult)!=0):
             AddedMember=myresult[0][0]+1
-        print(AddedMember," ", room)
         sql3_1="""UPDATE Rooms SET members = %s WHERE roomid = '%s';"""%(AddedMember,room)
         c.execute(sql3_1)
         conn.commit()
@@ -251,15 +258,16 @@ class User():
 create_connection(r"poker_database.db")
 #create_tables()
 #user=User()
-#user.insert_comment("hello", "there", "kenobi")
+
 #test_insert()
 user=User()
-user.member_exists("XRYDNQ")
+#user.insert_comment("hello", 'there', "kenobi")
+#user.member_exists("XRYDNQ")
 #user.room_exists('AJYZ')
 #user.show_rooms()
 #show_tabels()
-#print(type(show_users_table()))
+print(type(show_users_table()))
 #user.add_member('MNMCIM')
 #function()
 #print(user.generate_unique_code())
-print(user.show_rooms())
+#print(user.show_rooms())
