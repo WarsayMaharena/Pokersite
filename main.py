@@ -52,7 +52,25 @@ def room():
     if room is None or name is None or NonExistent==False:
         return redirect(url_for("home"))
     
-    return render_template("room.html",room=room,name=name) #also add in messages.
+    return render_template("room.html",code=room,name=name) #also add in messages.
+
+socketio.on("message")
+def message(data):
+    room=session.get("room")
+    name=session.get("name")
+    message=name+": "+data["data"]
+    if user.room_exists(room) ==False:
+        return
+    
+    content = {
+        "name":session.get("name"), 
+        "message": data["data"]
+    }
+
+    send(content, to=room)
+    user.insert_comment(name,room,message)
+    print(f"{session.get('name')} said: {data['data']}")
+
 
 @socketio.on("connect")
 def connect(auth):
