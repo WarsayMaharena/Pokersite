@@ -1,9 +1,10 @@
+from userdb import User
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_socketio import join_room, leave_room, send, SocketIO
 import random
 from string import ascii_uppercase
-from create_database import User
-user=User()
+from create_database import Users
+user=Users()
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "hjhjsdahhds"
 socketio = SocketIO(app)
@@ -41,7 +42,37 @@ def home():
         session["betting"] = betting
         return redirect(url_for("room"))
 
-    return render_template("home.html")
+    #return render_template('home.hmtl')
+    return redirect(url_for("create_account"))
+
+
+@app.route("/login", methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('name')
+        password = request.form.get('password')
+        if User().authentication(user_name=username, password=password) == True:
+            return redirect(url_for('create_account'))
+        else:
+            return render_template('login.html', error="Username or password is wrong")
+    
+    return render_template("login.html")
+
+
+@app.route("/create_account", methods=['POST', 'GET'])
+def create_account():
+    if request.method == 'POST':
+        username = request.form.get('name')
+        password = request.form.get('password')
+        email = request.form.get('email')
+        if User().check_new_user(user_name=username, email=email) == True:
+            User().add_user(user_name=username, password=password, email=email)
+            return redirect(url_for('home'))
+        else:
+            return render_template('create_account.html', error="Email or username already exists")
+
+    return render_template("create_account.html")
+
 
 @app.route("/room")
 def room():

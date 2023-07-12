@@ -111,7 +111,7 @@ def test_insert():
     conn.commit()
     c.close()
     
-class User():
+class Users():
     ############## SQL insert, retrieve eller delete Kommando ##########################################
     def __init__(self):
         database = r"poker_database.db"
@@ -256,18 +256,18 @@ class User():
 
  
 
-create_connection(r"poker_database.db")
-create_tables()
+#create_connection(r"poker_database.db")
+#create_tables()
 #user=User()
 
 #test_insert()
-user=User()
-user.insert_comment("hello", 'there', "kenobi")
+#user=Users()
+#user.insert_comment("hello", 'there', "kenobi")
 #user.member_exists("XRYDNQ")
 #user.room_exists('AJYZ')
 #user.show_rooms()
 #show_tabels()
-print(type(show_users_table()))
+#print(type(show_users_table()))
 #user.add_member('MNMCIM')
 #function()
 #print(user.generate_unique_code())
