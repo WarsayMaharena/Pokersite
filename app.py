@@ -52,7 +52,7 @@ def login():
         username = request.form.get('name')
         password = request.form.get('password')
         if User().authentication(user_name=username, password=password) == True:
-            return redirect(url_for('create_account'))
+            return redirect(url_for('home'))
         else:
             return render_template('login.html', error="Username or password is wrong")
     
