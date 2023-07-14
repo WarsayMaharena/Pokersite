@@ -50,6 +50,10 @@ def create_tables():
     );
     """
 
+    sql_room_user_table = """CREATE TABLE IF NOT EXISTS RoomUsers (
+                            player Integer
+    );"""
+
     conn = create_connection(database)
     c = conn.cursor()
     
@@ -184,6 +188,7 @@ class User():
         sql3_1="""UPDATE Rooms SET members = %s WHERE roomid = '%s';"""%(AddedMember,room)
         c.execute(sql3_1)
         conn.commit()
+        return AddedMember
 
     def sub_member(self, room):
         database = r"poker_database.db"

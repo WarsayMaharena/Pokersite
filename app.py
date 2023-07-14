@@ -43,16 +43,25 @@ def home():
 
     return render_template("home.html")
 
-@app.route("/room")
+@app.route("/room", methods=['POST', 'GET'])
 def room():
-    
+    print("------------ENTERED A ROOM")
     room=session.get("room")
     name=session.get("name")
     NonExistent=user.room_exists(room)
+    print("room:", room, "name", name, "noneexistant:", NonExistent)
     if room is None or name is None or NonExistent==False:
         return redirect(url_for("home"))
     
+    if request.method == "POST":
+        bet = request.form.get('bet')
+        check = request.form.get('check', False)
+        fold = request.form.get('fold', False)
+        print("-------------entered POST")
+        if check == False:
+            print("-------------PRESSED CHECK")   
     return render_template("room.html",code=room,name=name) #also add in messages.
+
 
 @socketio.on("message")
 def message(data):
@@ -86,8 +95,9 @@ def connect(auth):
     
     join_room(room)
     send({"name": name, "message":"has joined the room"}, to=room)
-    user.add_member(room)
+    session["playerpos"] = user.add_member(room)
     print(f"{name} has joined room {room}")
+
 
 @socketio.on("disconnect")
 def disconnect():
@@ -104,5 +114,21 @@ def disconnect():
     print(f"{name} has left the room {room}")
 
 
+@socketio.on("startgame")
+def startgame(currPlayer):
+    content = {
+        "currPlayer":currPlayer
+    }
+
+
+@socketio.on("check")
+def check(currPlayer):
+    if session.get("playerpos") == currPlayer:
+        #Check if someone has raised before them: if raisedAmount > 0: betted - raisedAmount
+        currPlayer = currPlayer + 1
+        #Send currplayer to the rest of the players
+
+
+        
 if __name__ == "__main__":
     socketio.run(app, debug=True)
