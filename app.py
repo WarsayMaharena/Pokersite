@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-from flask_socketio import join_room, leave_room, send, SocketIO
+from flask_socketio import join_room, leave_room, send, emit, SocketIO
 import random
 from string import ascii_uppercase
 from create_database import User
@@ -96,6 +96,8 @@ def connect(auth):
     join_room(room)
     send({"name": name, "message":"has joined the room"}, to=room)
     session["playerpos"] = user.add_member(room)
+    session["currPlayer"] = 1
+    print("playerpos", session["playerpos"], "current players turn=", session["currPlayer"])
     print(f"{name} has joined room {room}")
 
 
@@ -114,19 +116,40 @@ def disconnect():
     print(f"{name} has left the room {room}")
 
 
-@socketio.on("startgame")
-def startgame(currPlayer):
-    content = {
-        "currPlayer":currPlayer
-    }
+@socketio.on("updateCurrPlayer")
+def updateCurrPlayer(currPlayer):
+    session["currPlayer"] = currPlayer
+    print(session.get("currPlayer"))
+    
 
-
+#Currplayer is none for some reason need fix
 @socketio.on("check")
-def check(currPlayer):
-    if session.get("playerpos") == currPlayer:
+def check():
+    print("-------Entered check, playerpos: ", session.get("playerpos"), "currplayer: ", session.get("currplayer"))
+    room = session.get("room")
+    if int(session.get("playerpos")) == int(session.get("currPlayer")):
         #Check if someone has raised before them: if raisedAmount > 0: betted - raisedAmount
-        currPlayer = currPlayer + 1
+        print("----Check IF STATEMENT")
+
+        session["currPlayer"] = int(session.get("currPlayer")) + 1
+
         #Send currplayer to the rest of the players
+        #This emit statement calls the socketio.on(updateCurrPlayer) function in the javascript code
+        emit("updateCurrPlayer", {'data': session.get("currPlayer")}, to=room)
+
+
+@socketio.on("fold")
+def fold():
+    room = session.get("room")
+    if session.get("playerpos") == session.get("currPlayer"):
+        pass
+
+
+@socketio.on("bet")
+def bet():
+    room = session.get("room")
+    if session.get("playerpos") == session.get("currPlayer"):
+        pass
 
 
         

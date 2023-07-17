@@ -43,7 +43,17 @@
 
   const check = () => {
     socketio.emit("check");
-  }
+  };
+
+  socketio.on("updateCurrPlayer", (data) => {
+    console.log(data.data)
+    console.log('updateCurrplayer')
+    updateCurrPlayer(data.data)
+  });
+
+  const updateCurrPlayer = (currPlayer) => {
+    socketio.emit("updateCurrPlayer", { data : currPlayer })
+  };
   
 </script>
 </div>
