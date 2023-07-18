@@ -97,6 +97,7 @@ def connect(auth):
     send({"name": name, "message":"has joined the room"}, to=room)
     session["playerpos"] = user.add_member(room)
     session["currPlayer"] = 1
+    session["roundBet"] = 0
     print("playerpos", session["playerpos"], "current players turn=", session["currPlayer"])
     print(f"{name} has joined room {room}")
 
@@ -117,21 +118,27 @@ def disconnect():
 
 
 @socketio.on("updateCurrPlayer")
-def updateCurrPlayer(currPlayer):
+def updateCurrPlayer(currPlayer, betAmount=0):
     session["currPlayer"] = currPlayer
-    print(session.get("currPlayer"))
+    print("Updatecurrplayer", session.get("currPlayer"))
+    session["roundBet"] = session.get("roundBet") + betAmount
+    print("Betamont: ", session.get("roundBet"))
+    
     
 
 #Currplayer is none for some reason need fix
 @socketio.on("check")
 def check():
-    print("-------Entered check, playerpos: ", session.get("playerpos"), "currplayer: ", session.get("currplayer"))
+    print("-------Entered check, playerpos: ", session.get("playerpos"), "currplayer: ", session.get("currPlayer"))
     room = session.get("room")
     if int(session.get("playerpos")) == int(session.get("currPlayer")):
         #Check if someone has raised before them: if raisedAmount > 0: betted - raisedAmount
         print("----Check IF STATEMENT")
+        if session["currPlayer"] >= user.return_members(room):
+            session["currPlayer"] = 1
+        else:
+            session["currPlayer"] = int(session.get("currPlayer")) + 1
 
-        session["currPlayer"] = int(session.get("currPlayer")) + 1
 
         #Send currplayer to the rest of the players
         #This emit statement calls the socketio.on(updateCurrPlayer) function in the javascript code
@@ -146,10 +153,15 @@ def fold():
 
 
 @socketio.on("bet")
-def bet():
+def bet(betAmount):
     room = session.get("room")
+    playerpos = session.get("playerpos")
+    print(betAmount)
+    amount = betAmount
+    print("amount", amount)
     if session.get("playerpos") == session.get("currPlayer"):
-        pass
+        print(betAmount, playerpos, "PLAYERPOIS BETAMOUNT")
+        emit("updateBet", {'data': betAmount, 'pos': playerpos}, to=room)
 
 
         

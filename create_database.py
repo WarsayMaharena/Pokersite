@@ -174,7 +174,18 @@ class User():
         else:
             return True
                
-        
+    def return_members(self, room):
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
+        sql3="""SELECT members FROM Rooms WHERE roomid='%s';"""%(room)
+        c.execute(sql3)
+        myresult=c.fetchall()
+        members = myresult[0][0]
+        conn.close()
+        return members
+
+
     def add_member(self, room): #adds a member to the room
         database = r"poker_database.db"
         conn = create_connection(database)
@@ -250,8 +261,8 @@ class User():
     ############## Hjälp funktioner för SQL kommando ##########################################
 
 
-
-
+user = User()
+print(user.return_members('BAWDFJ'))
 
 
 
@@ -261,18 +272,17 @@ class User():
 
  
 
-create_connection(r"poker_database.db")
-create_tables()
+#create_connection(r"poker_database.db")
+#create_tables()
 #user=User()
 
 #test_insert()
-user=User()
-user.insert_comment("hello", 'there', "kenobi")
+#user=User()
+#user.insert_comment("hello", 'there', "kenobi")
 #user.member_exists("XRYDNQ")
 #user.room_exists('AJYZ')
-#user.show_rooms()
 #show_tabels()
-print(type(show_users_table()))
+#print(type(show_users_table()))
 #user.add_member('MNMCIM')
 #function()
 #print(user.generate_unique_code())

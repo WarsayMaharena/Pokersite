@@ -9,7 +9,8 @@
     <button type="button"  name="send" id="send-btn" onClick="sendMessage()">
       Send
     </button>
-      <p> Bet: <input type = "text" name = "bet" /></p>
+      <p> Bet: <input type = "text" name = "bet" id="bet" /></p>
+      <button type="button" name="betbutton" id="check-button" onClick="bet()">Bet </button>
       <button type="button" name="check" id="check-button" onClick="check()">Check </button>
   </div>
 </div>
@@ -52,9 +53,27 @@
   });
 
   const updateCurrPlayer = (currPlayer) => {
-    socketio.emit("updateCurrPlayer", { data : currPlayer })
+    socketio.emit("updateCurrPlayer", currPlayer)
   };
   
+  const bet = () => {
+    const bet = document.getElementById("bet")
+    if (bet.value == "") return;
+    socketio.emit("bet", bet.value)
+  }
+
+
+  socketio.on("updateBet", (data) => {
+    console.log(data.data)
+    console.log(data.pos)
+    console.log('updateBet')
+    updateBet(data.data, data.pos)
+  });
+
+  const updateBet = (currPlayer, betAmount) => {
+    socketio.emit("updateCurrPlayer", currPlayer, betAmount)
+  }
+
 </script>
 </div>
 
