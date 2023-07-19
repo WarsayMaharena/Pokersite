@@ -139,7 +139,7 @@ def check():
     if int(session.get("playerpos")) == int(session.get("currPlayer")):
 
         if session.get("roundBet") > 0:
-            session["betted"] = session.get("betted") - session.get("roundBet")
+            session["betting"] = int(session.get("betting")) - int(session.get("roundBet"))
 
         print("----Check IF STATEMENT")
 
