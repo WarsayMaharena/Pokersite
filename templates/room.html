@@ -12,6 +12,7 @@
       <p> Bet: <input type = "text" name = "bet" id="bet" /></p>
       <button type="button" name="betbutton" id="check-button" onClick="bet()">Bet </button>
       <button type="button" name="check" id="check-button" onClick="check()">Check </button>
+      <button type="button" name="fold" id="fold-button" onClick="fold()">Fold </button>
   </div>
 </div>
 
@@ -42,6 +43,7 @@
     message.value = "";
   };
 
+
   const check = () => {
     socketio.emit("check");
   };
@@ -56,23 +58,40 @@
     socketio.emit("updateCurrPlayer", currPlayer)
   };
   
+
   const bet = () => {
     const bet = document.getElementById("bet")
     if (bet.value == "") return;
     socketio.emit("bet", bet.value)
-  }
-
+  };
 
   socketio.on("updateBet", (data) => {
     console.log(data.data)
     console.log(data.pos)
     console.log('updateBet')
-    updateBet(data.data, data.pos)
+    updateBet(data.pos, data.data)
   });
 
   const updateBet = (currPlayer, betAmount) => {
     socketio.emit("updateCurrPlayer", currPlayer, betAmount)
-  }
+  };
+
+
+  const fold = () => {
+    socketio.emit("fold")
+  };
+
+  socketio.on("updateFold", (data) => {
+    console.log("folded")
+    console.log(data.data)
+    console.log(data.pos)
+    console.log(data.roundBet)
+    updateFold(data.pos, data.roundBet, data.data)
+  });
+
+  const updateFold = (currPlayer, roundBet, folded) => {
+    socketio.emit("updateCurrPlayer", currPlayer, roundBet, folded)
+  };
 
 </script>
 </div>

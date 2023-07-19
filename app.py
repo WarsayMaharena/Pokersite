@@ -98,6 +98,7 @@ def connect(auth):
     session["playerpos"] = user.add_member(room)
     session["currPlayer"] = 1
     session["roundBet"] = 0
+    session["folded"] = 0
     print("playerpos", session["playerpos"], "current players turn=", session["currPlayer"])
     print(f"{name} has joined room {room}")
 
@@ -118,11 +119,15 @@ def disconnect():
 
 
 @socketio.on("updateCurrPlayer")
-def updateCurrPlayer(currPlayer, betAmount=0):
+def updateCurrPlayer(currPlayer, betAmount=0, folded=0):
     session["currPlayer"] = currPlayer
     print("Updatecurrplayer", session.get("currPlayer"))
-    session["roundBet"] = session.get("roundBet") + betAmount
-    print("Betamont: ", session.get("roundBet"))
+    print("Betamont: ", session.get("roundBet"), betAmount)
+    session["roundBet"] = session.get("roundBet") + int(betAmount)
+    print(session.get("roundBet"))
+    print("Folded = ", folded)
+
+    session["folded"] = folded
     
     
 
@@ -132,12 +137,13 @@ def check():
     print("-------Entered check, playerpos: ", session.get("playerpos"), "currplayer: ", session.get("currPlayer"))
     room = session.get("room")
     if int(session.get("playerpos")) == int(session.get("currPlayer")):
-        #Check if someone has raised before them: if raisedAmount > 0: betted - raisedAmount
+
+        if session.get("roundBet") > 0:
+            session["betted"] = session.get("betted") - session.get("roundBet")
+
         print("----Check IF STATEMENT")
-        if session["currPlayer"] >= user.return_members(room):
-            session["currPlayer"] = 1
-        else:
-            session["currPlayer"] = int(session.get("currPlayer")) + 1
+
+        nextPlayer()
 
 
         #Send currplayer to the rest of the players
@@ -148,21 +154,36 @@ def check():
 @socketio.on("fold")
 def fold():
     room = session.get("room")
+    bet = session.get("roundBet")
     if session.get("playerpos") == session.get("currPlayer"):
-        pass
+
+        session["folded"] = 1
+        nextPlayer()
+
+        emit("updateFold", {'data': session.get("folded"), 'pos':session.get("currPlayer"), 'roundBet': bet}, to=room)
+        
 
 
 @socketio.on("bet")
 def bet(betAmount):
     room = session.get("room")
-    playerpos = session.get("playerpos")
-    print(betAmount)
+    print("Inside the bet function in app.py:", betAmount)
     amount = betAmount
     print("amount", amount)
     if session.get("playerpos") == session.get("currPlayer"):
-        print(betAmount, playerpos, "PLAYERPOIS BETAMOUNT")
-        emit("updateBet", {'data': betAmount, 'pos': playerpos}, to=room)
+        print(betAmount, "PLAYERPOIS BETAMOUNT")
+        nextPlayer()
+        emit("updateBet", {'data': betAmount, 'pos': session.get("currPlayer")}, to=room)
 
+
+def nextPlayer():
+    room = session.get("room")
+
+    if session.get("currPlayer") >= user.return_members(room):
+        session["currPlayer"] = 1
+    else:
+        session["currPlayer"] = session.get("currPlayer") + 1
+        print("inside nextPlayer", session.get("currPlayer"))
 
         
 if __name__ == "__main__":
