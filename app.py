@@ -175,6 +175,14 @@ def bet(betAmount):
         nextPlayer()
         emit("updateBet", {'data': betAmount, 'pos': session.get("currPlayer")}, to=room)
 
+@socketio.on("getfolded")
+def getfolded(currplayer):
+    folded = session.get("folded")
+    if session.get("playerpos") == currplayer and folded == 1:
+        nextPlayer()
+        emit("updateCurrPlayer", {'data': session.get("currPlayer")}, to=room)
+
+
 
 def nextPlayer():
     room = session.get("room")

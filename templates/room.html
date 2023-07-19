@@ -51,6 +51,8 @@
   socketio.on("updateCurrPlayer", (data) => {
     console.log(data.data)
     console.log('updateCurrplayer')
+    getfolded(data.data)
+
     updateCurrPlayer(data.data)
   });
 
@@ -58,6 +60,9 @@
     socketio.emit("updateCurrPlayer", currPlayer)
   };
   
+  const getfolded = (currplayer) => {
+    socketio.emit("getfolded", currplayer)
+  }
 
   const bet = () => {
     const bet = document.getElementById("bet")
