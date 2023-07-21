@@ -119,15 +119,14 @@ def disconnect():
 
 
 @socketio.on("updateCurrPlayer")
-def updateCurrPlayer(currPlayer, betAmount=0, folded=0):
+def updateCurrPlayer(currPlayer, betAmount=0):
     session["currPlayer"] = currPlayer
     print("Updatecurrplayer", session.get("currPlayer"))
     print("Betamont: ", session.get("roundBet"), betAmount)
     session["roundBet"] = session.get("roundBet") + int(betAmount)
     print(session.get("roundBet"))
-    print("Folded = ", folded)
+    getfolded(0)
 
-    session["folded"] = folded
     
     
 
@@ -145,7 +144,7 @@ def check():
 
         nextPlayer()
 
-
+        print("INSIDE CHECK AFTER THE NEXTPLAYER FUNC", session.get("currPlayer"))
         #Send currplayer to the rest of the players
         #This emit statement calls the socketio.on(updateCurrPlayer) function in the javascript code
         emit("updateCurrPlayer", {'data': session.get("currPlayer")}, to=room)
@@ -160,6 +159,7 @@ def fold():
         session["folded"] = 1
         nextPlayer()
 
+        print("Inside folded----", session.get("folded"))
         emit("updateFold", {'data': session.get("folded"), 'pos':session.get("currPlayer"), 'roundBet': bet}, to=room)
         
 
@@ -178,8 +178,16 @@ def bet(betAmount):
 @socketio.on("getfolded")
 def getfolded(currplayer):
     folded = session.get("folded")
-    if session.get("playerpos") == currplayer and folded == 1:
+    room = session.get("room")
+    print("INSIDE THE GETFOLDED FUNCTION", folded, "player= ", session.get('playerpos'), "currplayer:", session.get('currPlayer'))
+    print("Currplayer:", currplayer)
+    if folded == 1 and session.get('playerpos') == session.get('currPlayer'):
+        print("Inside the getfolded function IF STATEMENT")
+        print("Inside the getfolded function currplayer before nextplayer", session.get('currPlayer'))
         nextPlayer()
+        print("Inside the getfolded function currplayer after nextplayer", session.get('currPlayer'))
+        session["folded"] = 0
+        #This emit does not get ran
         emit("updateCurrPlayer", {'data': session.get("currPlayer")}, to=room)
 
 
