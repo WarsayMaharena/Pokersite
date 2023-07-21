@@ -51,16 +51,20 @@
   socketio.on("updateCurrPlayer", (data) => {
     console.log(data.data)
     console.log('updateCurrplayer')
-    getfolded(data.data)
-
     updateCurrPlayer(data.data)
+
+    //getfolded makes no changes to data.data before and after it is ran
+    console.log('Before getfolded is ran', data.data)
+    //getfolded(data.data)    
   });
 
   const updateCurrPlayer = (currPlayer) => {
     socketio.emit("updateCurrPlayer", currPlayer)
   };
   
+  //This does not emit to all players
   const getfolded = (currplayer) => {
+    console.log('inside getfolded const')
     socketio.emit("getfolded", currplayer)
   }
 
@@ -95,7 +99,8 @@
   });
 
   const updateFold = (currPlayer, roundBet, folded) => {
-    socketio.emit("updateCurrPlayer", currPlayer, roundBet, folded)
+    //socketio.emit("updateCurrPlayer", currPlayer, roundBet, folded)
+    socketio.emit("updateCurrPlayer", currPlayer)
   };
 
 </script>
