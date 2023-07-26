@@ -99,6 +99,11 @@ def connect(auth):
     session["currPlayer"] = 1
     session["roundBet"] = 0
     session["folded"] = 0
+    session["cards"] = ['S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'SJ', 'SQ', 'SK', 'SA',
+                        'H2', 'H3', 'H4', 'H5', 'H6', 'H7', 'H8', 'H9', 'H10', 'HJ', 'HQ', 'HK', 'HA',
+                        'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'CJ', 'CQ', 'CK', 'CA',
+                        'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'DJ', 'DQ', 'DK', 'DA']
+    
     print("playerpos", session["playerpos"], "current players turn=", session["currPlayer"])
     print(f"{name} has joined room {room}")
 
@@ -186,7 +191,7 @@ def getfolded(currplayer):
         print("Inside the getfolded function currplayer before nextplayer", session.get('currPlayer'))
         nextPlayer()
         print("Inside the getfolded function currplayer after nextplayer", session.get('currPlayer'))
-        session["folded"] = 0
+        #session["folded"] = 0
         #This emit does not get ran
         emit("updateCurrPlayer", {'data': session.get("currPlayer")}, to=room)
 
@@ -200,6 +205,27 @@ def nextPlayer():
     else:
         session["currPlayer"] = session.get("currPlayer") + 1
         print("inside nextPlayer", session.get("currPlayer"))
+
+
+@socketio.on('flop')
+def flop():
+    room = session.get("room")
+    cards = session["cards"]
+    flop = []
+    for x in range(0, 3):     
+        element = random.randint(0, len(cards)-1)
+        flop.append(cards[element])
+        cards.remove(element)
+
+    emit("updateCards", {'data': cards}, to=room)
+
+
+def turn():
+    pass
+
+
+def fouth_street():
+    pass
 
         
 if __name__ == "__main__":
