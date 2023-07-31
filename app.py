@@ -132,7 +132,7 @@ def updateCurrPlayer(currPlayer, betAmount=0):
     print(session.get("roundBet"))
     getfolded(0)
 
-    
+#newbranch    
     
 
 #Currplayer is none for some reason need fix
