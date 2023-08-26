@@ -3,6 +3,7 @@
 <div class="roomsite">
   <div class="message-box">
   <h2>Room: {{code}}</h2>
+  <h4>Players: /8</h6>
   <div class="messages" id="messages"></div>
   <div class="inputs">
     <input type="text" rows="3" placeholder="Message" name="message" id="message"/>
@@ -45,62 +46,16 @@
 
 
   const check = () => {
-    socketio.emit("check");
+    socketio.emit("button", {data: "check"});
   };
-
-  socketio.on("updateCurrPlayer", (data) => {
-    console.log(data.data)
-    console.log('updateCurrplayer')
-    updateCurrPlayer(data.data)
-
-    //getfolded makes no changes to data.data before and after it is ran
-    console.log('Before getfolded is ran', data.data)
-    //getfolded(data.data)    
-  });
-
-  const updateCurrPlayer = (currPlayer) => {
-    socketio.emit("updateCurrPlayer", currPlayer)
-  };
-  
-  //This does not emit to all players
-  const getfolded = (currplayer) => {
-    console.log('inside getfolded const')
-    socketio.emit("getfolded", currplayer)
-  }
 
   const bet = () => {
-    const bet = document.getElementById("bet")
-    if (bet.value == "") return;
-    socketio.emit("bet", bet.value)
+    const bet = document.getElementById("bet");
+    socketio.emit("button", {data: bet.value});
   };
-
-  socketio.on("updateBet", (data) => {
-    console.log(data.data)
-    console.log(data.pos)
-    console.log('updateBet')
-    updateBet(data.pos, data.data)
-  });
-
-  const updateBet = (currPlayer, betAmount) => {
-    socketio.emit("updateCurrPlayer", currPlayer, betAmount)
-  };
-
 
   const fold = () => {
-    socketio.emit("fold")
-  };
-
-  socketio.on("updateFold", (data) => {
-    console.log("folded")
-    console.log(data.data)
-    console.log(data.pos)
-    console.log(data.roundBet)
-    updateFold(data.pos, data.roundBet, data.data)
-  });
-
-  const updateFold = (currPlayer, roundBet, folded) => {
-    //socketio.emit("updateCurrPlayer", currPlayer, roundBet, folded)
-    socketio.emit("updateCurrPlayer", currPlayer)
+    socketio.emit("button", {data: "fold"});
   };
 
 </script>

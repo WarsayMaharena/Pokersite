@@ -86,7 +86,7 @@ def connect(auth):
     
     join_room(room)
     send({"name": name, "message":"has joined the room"}, to=room)
-    user.add_member(room)
+    #user.add_member(room)
     print(f"{name} has joined room {room}")
 
 @socketio.on("disconnect")
@@ -102,6 +102,19 @@ def disconnect():
 
     send({"name": name, "message":"has left the room"}, to=room)
     print(f"{name} has left the room {room}")
+
+@socketio.on("button")
+def button(data):
+    value=data["data"]
+    if value == "check":                #check function
+        print("check is here")
+
+    elif value == "fold":                #fold function
+        print("fold is here")
+
+    else:                               #Bet function
+        print(value, "bet is here")
+
 
 
 if __name__ == "__main__":
