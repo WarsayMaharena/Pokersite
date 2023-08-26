@@ -3,7 +3,7 @@
 <div class="roomsite">
   <div class="message-box">
   <h2>Room: {{code}}</h2>
-  <h4>Players: /8</h6>
+  <h4 id="maxplayer">Players: 1/8</h4>
   <div class="messages" id="messages"></div>
   <div class="inputs">
     <input type="text" rows="3" placeholder="Message" name="message" id="message"/>
@@ -18,9 +18,16 @@
 </div>
 
 <script type="text/javascript">
+
   var socketio = io();
 
   const messages = document.getElementById("messages");
+
+  function update_values(){ //update the values in maxplayer count and also other functionalities in the future. 
+                            //it isn't connected to the server though
+    const values = document.getElementById("maxplayer");
+    values.innerHTML=`Players: ${x}/8`;
+  };
 
   const createMessage = (name, msg) => {
     const content = `
@@ -51,7 +58,9 @@
 
   const bet = () => {
     const bet = document.getElementById("bet");
+    if (bet.value == "") return;
     socketio.emit("button", {data: bet.value});
+    message.value = "";
   };
 
   const fold = () => {
