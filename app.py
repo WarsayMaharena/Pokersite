@@ -100,12 +100,16 @@ def connect(auth):
 def disconnect():
     room=session.get("room")
     name=session.get("name")
-    leave_room(room)
     maxplayers=user.member_exists(room)-1
+    leave_room(room)
+    print("Before: ",user.show_rooms)
     if user.room_exists(room)==True:
         user.sub_member(room)
+        print("user deleted")
         if user.member_exists(room)==False:
+            print("room deleted")
             user.del_room(room)
+    print("After: ",user.show_rooms)
 
     send({"name": name, "message":"has left the room"}, to=room)
     emit('update_values',{'data':maxplayers},to=room)
