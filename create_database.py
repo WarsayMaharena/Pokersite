@@ -113,10 +113,10 @@ def test_insert():
     
 class User():
     ############## SQL insert, retrieve eller delete Kommando ##########################################
-    #def __init__(self):
-    #    database = r"poker_database.db"
-    #    self.conn = create_connection(database)
-    #    self.c = self.conn.cursor()
+    def __init__(self):
+        database = r"poker_database.db"
+        self.conn = create_connection(database)
+        self.c = self.conn.cursor()
 
     def insert_comment(self, name, roomid, message):
         database = r"poker_database.db"
@@ -178,10 +178,8 @@ class User():
         sql3="""SELECT members FROM Rooms WHERE roomid='%s';"""%(room)
         c.execute(sql3)
         myresult=c.fetchall()
-        print("add_member\n",myresult)
         if(len(myresult)!=0):
             AddedMember=myresult[0][0]+1
-        print(AddedMember," ", room)
         sql3_1="""UPDATE Rooms SET members = %s WHERE roomid = '%s';"""%(AddedMember,room)
         c.execute(sql3_1)
         conn.commit()
@@ -193,16 +191,13 @@ class User():
         sql3="""SELECT members FROM Rooms WHERE roomid='%s';"""%(room)
         c.execute(sql3)
         myresult=c.fetchall()
-        print("sub_member\n",myresult)
         if(len(myresult)!=0):
             SubbedMember=myresult[0][0]-1
-        print(SubbedMember," ", room)
         sql3_1="""UPDATE Rooms SET members = %s WHERE roomid = '%s';"""%(SubbedMember,room)
         c.execute(sql3_1)
         conn.commit()
    
     def del_room(self, room): #deletes the room once all members have left
-        print("del_room\n",user.show_rooms())
         database = r"poker_database.db"
         conn = create_connection(database)
         c = conn.cursor()
@@ -228,23 +223,18 @@ class User():
         sql3="""SELECT roomid FROM Rooms WHERE roomid='%s';"""%(code)
         c.execute(sql3)
         myresult=c.fetchall()
-        print("generate_unique_code\n",myresult)
         while True:
             if len(myresult) == 0:
                     sql_insert_query = """INSERT INTO Rooms VALUES ('%s', %s);"""%(code,0)
                     c.execute(sql_insert_query)
                     conn.commit()
                     c.close()
-                    print("here1")
                     break   
             
             else: #om koden redan existerar generas en ny kod för rummet
-                print("#######LOOP1######## \nold code: ",code,"\n")
                 code=""
                 for _ in range(6):
                     code += random.choice(ascii_uppercase)
-                print("new code: ", code,"\n\n")
-        
         return code
     
     ############## Hjälp funktioner för SQL kommando ##########################################
@@ -270,7 +260,7 @@ user=User()
 #user.insert_comment("hello", 'there', "kenobi")
 #user.member_exists("XRYDNQ")
 #user.room_exists('AJYZ')
-
+print(user.show_rooms())
 #show_tabels()
 #print(type(show_users_table()))
 #user.add_member('MNMCIM')

@@ -80,7 +80,7 @@ def connect(auth):
     name=session.get("name")
     if not room or not name:
         return
-    if user.room_exists==False:
+    if user.room_exists(room)==False:
         leave_room(room)
         return
     
