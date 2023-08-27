@@ -23,11 +23,11 @@
 
   const messages = document.getElementById("messages");
 
-  function update_values(){ //update the values in maxplayer count and also other functionalities in the future. 
+  socketio.on("update_values", (data) => { //update the values in maxplayer count and also other functionalities in the future. 
                             //it isn't connected to the server though
     const values = document.getElementById("maxplayer");
-    values.innerHTML=`Players: ${x}/8`;
-  };
+    values.innerHTML=`Players: ${data.data}/8`;
+  });
 
   const createMessage = (name, msg) => {
     const content = `

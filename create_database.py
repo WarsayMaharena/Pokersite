@@ -163,15 +163,16 @@ class User():
         sql3="""SELECT members FROM Rooms WHERE roomid='%s';"""%(room)
         c.execute(sql3)
         myresult=c.fetchall()
+        c.close()
         if myresult[0][0] == 0:
-            c.close()
+            print(myresult[0][0], " false")
             return False
         else:
-            return True
+            print(myresult[0][0])
+            return myresult[0][0]
                
         
     def add_member(self, room): #adds a member to the room
-        
         database = r"poker_database.db"
         conn = create_connection(database)
         c = conn.cursor()
@@ -207,6 +208,9 @@ class User():
         c.close
 
     def show_rooms(self):
+        database = r"poker_database.db"
+        conn = create_connection(database)
+        c = conn.cursor()
         sql3 = "SELECT * FROM Rooms"
         self.c.execute(sql3)
         myresult=self.c.fetchall()
@@ -252,7 +256,7 @@ class User():
  
 
 create_connection(r"poker_database.db")
-create_tables()
+#create_tables()
 #user=User()
 
 #test_insert()

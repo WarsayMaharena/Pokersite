@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, session, redirect, url_for
-from flask_socketio import join_room, leave_room, send, SocketIO
+from flask_socketio import join_room, leave_room, emit, send, SocketIO
 import random
 from string import ascii_uppercase
 from create_database import User
@@ -83,9 +83,16 @@ def connect(auth):
     if user.room_exists(room)==False:
         leave_room(room)
         return
-    
     join_room(room)
     send({"name": name, "message":"has joined the room"}, to=room)
+    maxplayers=user.member_exists(room)
+    print(maxplayers," Amount Maxplayers")
+    if maxplayers == False:
+        print("im in here")
+        maxplayers=1
+    else:
+        maxplayers=maxplayers+1
+    emit('update_values',{'data':maxplayers},to=room)
     user.add_member(room)
     print(f"{name} has joined room {room}")
 
@@ -94,13 +101,14 @@ def disconnect():
     room=session.get("room")
     name=session.get("name")
     leave_room(room)
-
+    maxplayers=user.member_exists(room)-1
     if user.room_exists(room)==True:
         user.sub_member(room)
         if user.member_exists(room)==False:
             user.del_room(room)
 
     send({"name": name, "message":"has left the room"}, to=room)
+    emit('update_values',{'data':maxplayers},to=room)
     print(f"{name} has left the room {room}")
 
 @socketio.on("button")
