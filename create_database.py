@@ -214,6 +214,7 @@ class User():
         sql3 = "SELECT * FROM Rooms"
         self.c.execute(sql3)
         myresult=self.c.fetchall()
+        print(myresult)
         return myresult
     
     def generate_unique_code(self):
@@ -262,9 +263,9 @@ create_connection(r"poker_database.db")
 #test_insert()
 user=User()
 #user.insert_comment("hello", 'there', "kenobi")
-#user.member_exists("XRYDNQ")
+user.member_exists("XPJTMD")
 #user.room_exists('AJYZ')
-print(user.show_rooms())
+#user.show_rooms()
 #show_tabels()
 #print(type(show_users_table()))
 #user.add_member('MNMCIM')

@@ -17,11 +17,17 @@
   </div>
 </div>
 
+
 <script type="text/javascript">
 
   var socketio = io();
 
   const messages = document.getElementById("messages");
+
+  socketio.on("button_response", (data)=> {
+    console.log(data.response)
+
+  });
 
   socketio.on("update_values", (data) => { //update the values in maxplayer count and also other functionalities in the future. 
                             //it isn't connected to the server though

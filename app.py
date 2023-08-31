@@ -78,11 +78,15 @@ def message(data):
 def connect(auth):
     room=session.get("room")
     name=session.get("name")
+    print("CONNECT ERROR??====================================BEGIN")
     if not room or not name:
-        return
+        print("here")
+        return 
     if user.room_exists(room)==False:
+        print("also here IM IN HERE")
         leave_room(room)
-        return
+        return 
+    print("am i also here")
     join_room(room)
     send({"name": name, "message":"has joined the room"}, to=room)
     maxplayers=user.member_exists(room)
@@ -95,11 +99,13 @@ def connect(auth):
     emit('update_values',{'data':maxplayers},to=room)
     user.add_member(room)
     print(f"{name} has joined room {room}")
+    print("CONNECT ERROR??====================================END")
 
 @socketio.on("disconnect")
 def disconnect():
     room=session.get("room")
     name=session.get("name")
+    print("DISCONNECT ERROR??====================================BEGIN")
     maxplayers=user.member_exists(room)-1
     leave_room(room)
     print("Before: ",user.show_rooms)
@@ -108,25 +114,31 @@ def disconnect():
         print("user deleted")
         if user.member_exists(room)==False:
             print("room deleted")
+            print(room)
             user.del_room(room)
+            return redirect('/')
+    
     print("After: ",user.show_rooms)
 
     send({"name": name, "message":"has left the room"}, to=room)
     emit('update_values',{'data':maxplayers},to=room)
     print(f"{name} has left the room {room}")
+    print("DISCONNECT ERROR??====================================END")
 
 @socketio.on("button")
 def button(data):
     value=data["data"]
     if value == "check":                #check function
         print("check is here")
+        emit('button_response',{'response':"check is here"},broadcast=False)
 
     elif value == "fold":                #fold function
         print("fold is here")
+        emit('button_response',{'response':"fold is here"},broadcast=False)
 
     else:                               #Bet function
         print(value, "bet is here")
-
+        emit('button_response',{'response':"bet is here"},broadcast=False)
 
 
 if __name__ == "__main__":
